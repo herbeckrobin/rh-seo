@@ -38,6 +38,7 @@ final class Plugin
 
         (new JsonLdGraph($business))->boot();
         (new MetaTags($business))->boot();
+        (new Title($business))->boot();
         (new WpCleanup())->boot();
         (new SeoMetaBox())->boot();
 

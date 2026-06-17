@@ -88,7 +88,80 @@ final class JsonLdGraph
 
         $graph[] = $webpage;
 
+        // Provider ist der lokale Knoten, wenn vorhanden, sonst die Organization.
+        $providerId = $type !== 'Organization' ? $businessId : $orgId;
+        $service = $this->serviceNode($providerId);
+        if ($service !== null) {
+            $graph[] = $service;
+        }
+
         return $graph;
+    }
+
+    /**
+     * Service-Knoten für die aktuelle Seite, wenn dort ein Service gepflegt ist.
+     * Speist sich aus den per-Seite-Feldern der SEO-Meta-Box.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function serviceNode(string $providerId): ?array
+    {
+        if (! is_singular()) {
+            return null;
+        }
+
+        $postId = get_queried_object_id();
+        $name = trim((string) get_post_meta($postId, Admin\SeoMetaBox::META_SERVICE_NAME, true));
+
+        if ($name === '') {
+            return null;
+        }
+
+        $node = [
+            '@type' => 'Service',
+            '@id' => Context::canonical() . '#service',
+            'name' => $name,
+            'provider' => ['@id' => $providerId],
+        ];
+
+        $serviceType = trim((string) get_post_meta($postId, Admin\SeoMetaBox::META_SERVICE_TYPE, true));
+        if ($serviceType !== '') {
+            $node['serviceType'] = $serviceType;
+        }
+
+        $area = $this->serviceArea();
+        if ($area !== null) {
+            $node['areaServed'] = $area;
+        }
+
+        return $node;
+    }
+
+    /**
+     * areaServed für den Service: GeoCircle aus Koordinaten + Radius, sonst der
+     * Ort als Place. Null, wenn keine Geo-/Ortsdaten gepflegt sind.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function serviceArea(): ?array
+    {
+        $geo = $this->business->geo();
+        $radius = $this->business->areaRadius();
+
+        if ($geo !== null && $radius !== '') {
+            return [
+                '@type' => 'GeoCircle',
+                'geoMidpoint' => $geo,
+                'geoRadius' => $radius,
+            ];
+        }
+
+        $locality = $this->business->get(Admin\BusinessDataGroup::FIELD_LOCALITY);
+        if ($locality !== '') {
+            return ['@type' => 'Place', 'name' => $locality];
+        }
+
+        return null;
     }
 
     /**

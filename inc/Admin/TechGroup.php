@@ -24,6 +24,7 @@ final class TechGroup implements GroupInterface
     public const FIELD_ROBOTS_ENHANCE = 'robots_enhance';
     public const FIELD_LANG = 'lang_attribute';
     public const FIELD_LOCALE = 'og_locale';
+    public const FIELD_TITLE_TEMPLATE = 'title_template';
 
     public function id(): string
     {
@@ -95,6 +96,14 @@ final class TechGroup implements GroupInterface
                 description: __('Locale für og:locale, z.B. de_DE, de_CH (mit Unterstrich).', 'rh-seo'),
                 default: 'de_DE',
                 keywords: ['locale', 'og', 'sprache'],
+            ),
+            new SettingField(
+                id: self::FIELD_TITLE_TEMPLATE,
+                type: SettingField::TYPE_TEXT,
+                label: __('Title-Template', 'rh-seo'),
+                description: __('Vorlage für den Browser-Title. Platzhalter: %page% (Seitentitel), %business% (Firmenname), %location% (Ort). Separator literal schreiben, z.B. "%page% | %business%". Leer lassen, dann bestimmt das Theme den Title. Eine einzelne Seite kann den Title in der SEO-Box selbst überschreiben.', 'rh-seo'),
+                default: '',
+                keywords: ['title', 'titel', 'template', 'browser'],
             ),
         ];
     }

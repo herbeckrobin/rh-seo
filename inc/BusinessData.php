@@ -48,12 +48,33 @@ final class BusinessData
 
     public function logoUrl(): string
     {
-        return $this->get(F::FIELD_LOGO_URL);
+        return $this->resolveImage(F::FIELD_LOGO_URL);
     }
 
     public function imageUrl(): string
     {
-        return $this->get(F::FIELD_IMAGE_URL) ?: $this->logoUrl();
+        return $this->resolveImage(F::FIELD_IMAGE_URL) ?: $this->logoUrl();
+    }
+
+    /**
+     * Löst ein Bild-Feld zu einer URL auf. Die Felder speichern eine
+     * Attachment-ID (portabel, URL wird hier erzeugt). Ein Altbestand als
+     * Legacy-URL wird unverändert durchgereicht.
+     */
+    private function resolveImage(string $field): string
+    {
+        $value = $this->get($field);
+
+        if ($value === '') {
+            return '';
+        }
+        if (ctype_digit($value)) {
+            $url = wp_get_attachment_image_url((int) $value, 'full');
+
+            return is_string($url) ? $url : '';
+        }
+
+        return $value;
     }
 
     /**

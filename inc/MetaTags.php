@@ -79,12 +79,28 @@ final class MetaTags
         echo $out; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- alle Werte einzeln escaped
     }
 
+    /**
+     * Description-Quelle, Fallback-Kette:
+     *   1. eigenes SEO-Feld der Seite (_rhseo_description)
+     *   2. redaktioneller Auszug der Seite (post_excerpt, editor-nativ)
+     *   3. Firmen-Kurzbeschreibung
+     *
+     * post_excerpt wird roh gelesen (nicht get_the_excerpt()), damit kein
+     * Auto-Trim des Seiteninhalts greift, sondern nur ein bewusst gepflegter Auszug.
+     */
     private function description(): string
     {
         if (is_singular()) {
-            $custom = (string) get_post_meta(get_queried_object_id(), SeoMetaBox::META_DESCRIPTION, true);
+            $postId = get_queried_object_id();
+
+            $custom = (string) get_post_meta($postId, SeoMetaBox::META_DESCRIPTION, true);
             if (trim($custom) !== '') {
                 return wp_strip_all_tags($custom);
+            }
+
+            $excerpt = (string) get_post_field('post_excerpt', $postId);
+            if (trim($excerpt) !== '') {
+                return wp_strip_all_tags($excerpt);
             }
         }
 

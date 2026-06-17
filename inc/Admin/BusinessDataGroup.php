@@ -188,16 +188,16 @@ final class BusinessDataGroup implements GroupInterface
             ),
             new SettingField(
                 id: self::FIELD_LOGO_URL,
-                type: SettingField::TYPE_URL,
-                label: __('Logo-URL', 'rh-seo'),
-                description: __('Vollständige URL zum Logo (quadratisch, mind. 112x112 px) für das Organisations-Schema.', 'rh-seo'),
+                type: SettingField::TYPE_MEDIA,
+                label: __('Logo', 'rh-seo'),
+                description: __('Logo aus der Mediathek (quadratisch, mind. 112x112 px) für das Organisations-Schema. Wird als Attachment gespeichert, übersteht Domain-Wechsel.', 'rh-seo'),
                 keywords: ['logo', 'bild'],
             ),
             new SettingField(
                 id: self::FIELD_IMAGE_URL,
-                type: SettingField::TYPE_URL,
+                type: SettingField::TYPE_MEDIA,
                 label: __('Standard-Vorschaubild (Open Graph)', 'rh-seo'),
-                description: __('Vollständige URL zum Bild, das beim Teilen in Social Media erscheint (ideal 1200x630 px).', 'rh-seo'),
+                description: __('Bild aus der Mediathek, das beim Teilen in Social Media erscheint (ideal 1200x630 px).', 'rh-seo'),
                 keywords: ['og', 'opengraph', 'vorschau', 'social'],
             ),
             new SettingField(
